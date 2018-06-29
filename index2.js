@@ -22,7 +22,22 @@ app.post('/Cities', function(req, res) {
 			}
 			res.send(result);
 			return;
-		} else {
+		}
+		var isExist = false;
+		ref.once("value", function(snapshot) {
+			snapshot.forEach(doc => {
+				if(datain['nama'] === doc.val()['nama']) {
+					result = {
+						"isSuccess": false,
+						"err": 'Kota sudah pernah dimasukkan'
+					}
+					res.send(result);
+					isExist = true;
+					return;
+				}
+			});
+		}).then(function() {
+			if(isExist) return;
 			ref.once("value", function(snapshot) {
 				var s = "000";
 				s = s + snapshot.numChildren();
@@ -37,7 +52,7 @@ app.post('/Cities', function(req, res) {
 				res.send(result);
 				console.log('Success adding data');
 			});
-		}
+		});
 	});
 });
 
